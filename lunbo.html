@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<style>
+        ol,ul,li,select{margin: 0; padding: 0;}
+        ul,ol,li{list-style: none;}
+        .roll{width:800px; height:300px; margin:20px auto 0;position: relative;}
+		#out,#out2{width:800px; height:300px; overflow:hidden;}
+		.con{width: 8000px; height: 300px; overflow: hidden;}
+		.con img{width: 800px; height: 300px; float: left;}
+		.round{overflow: hidden; position: absolute; bottom: 5px; left: 45%;}
+		.round li{width: 16px; height: 16px;border-radius: 50%;
+			background: #B9D4C8;margin: 0 5px; float: left; cursor: pointer;}
+		.left,.right{width: 30px; height: 40px;font-size: 30px;text-align: center;line-height: 40px; color:#fff;background: #000; cursor: pointer;opacity:0.5;
+			position: absolute;top:120px;left:0;display: none;}
+		.right{position: absolute;top:120px;left:770px;}
+		#out:hover .left{display: block;}
+		#out:hover .right{display: block;}
+		.round .select{background: #5CB85C;outline:0;}
+	</style>
+</head>       
+<body>
+	<div class="roll"> <!-- 最外层包裹元素，用来控制整个大图的位置以及作为子元素定位的参考 -->
+		<div id="out"> 
+			<div class="con"> <!-- 包裹图片，宽要比所有图片的总宽大， -->
+				<!-- <img src="images/04.jpg"> -->
+				<img src="images/qianxun.jpg">
+				<img src="images/timg.jpg">
+				<img src="images/timg2.jpg">
+				<img src="images/qianxun.jpg">
+				<!-- <img src="images/01.jpg"> -->
+			</div>
+			<ul class="round"> <!-- 放page小圆点 定位控制 z-index比图片大-->
+				<li class="select"></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+			<p class="left"><</p> <!-- 左右键 定位控制 z-index比图片大-->
+			<p class="right">></p>
+		</div>
+	</div>
+<script src="jquery-3.1.1.min.js"></script>
+<script>
+	$.fn.extend({
+		datu:function(){
+			var this2=$(this);
+			var fir=this2.find('.con img:first').clone();
+			var las=this2.find('.con img:last').clone();
+			this2.find('.con').append(fir);
+			this2.find('.con').prepend(las);
+			var imgw=Math.floor(this2.find('.con img').width());
+			var out=this2.find('#out');
+			out.scrollLeft(imgw);
+			var x=1,y=0;
+			var time1=null;
+			var img=this2.find('.con img'),li=this2.find('.round li');
+			var left=this2.find('.left'),right=this2.find('.right');
+			function huan(){
+				clearInterval(time1);
+				time1=setInterval(function(){
+					x++;
+					if(x==img.length){
+						x=2;
+						out.scrollLeft(imgw);
+					}
+					y++;
+					if(y==li.length){
+						y=0;
+					}
+					bian();
+				},3000)
+			}
+			function bian(){
+				li.eq(y).addClass('select').siblings().removeClass('select');
+				out.animate({scrollLeft:imgw*x});
+			}
+			left.click(function(){
+				clearInterval(time1);
+				x--;
+				if(x<0){
+					x=img.length-3;
+					out.scrollLeft(imgw*(x+1),10);
+				}
+				y--;
+				if(y<0){
+					y=li.length-1;
+				}
+				bian()
+				huan()
+			})
+			right.click(function(){
+				clearInterval(time1);
+				x++;
+				if(x==img.length){
+					x=2;
+					out.scrollLeft(imgw);
+				}
+				y++;
+				if(y==li.length){
+					y=0;
+				}
+				bian()
+				huan()
+			})
+			li.mouseenter(function(){
+				clearInterval(time1);
+				y=$(this).index();
+				x=y+1;
+				bian()
+				huan()
+			})
+			huan();
+		}
+	})
+	$(function(){
+		$('.roll').datu();
+	})
+</script>
+</body>
+</html>
